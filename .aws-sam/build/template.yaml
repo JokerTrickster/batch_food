@@ -1,0 +1,57 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: "\uC74C\uC2DD \uC774\uB984 \uC0DD\uC131 \uBC30\uCE58\n"
+Globals:
+  Function:
+    Timeout: 60
+Resources:
+  FoodNameBatchFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: FoodNameBatchFunction
+      Handler: bootstrap
+      PackageType: Zip
+      MemorySize: 128
+      Runtime: provided.al2023
+      VpcConfig:
+        SecurityGroupIds:
+        - sg-0d4f2d15fa5913603
+        SubnetIds:
+        - subnet-0e4c4c4cc2b0459e1
+        - subnet-0a46a28c5d6246a32
+      Architectures:
+      - x86_64
+      Events:
+        CWSchedule:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0/3 * * * ? *)
+      ReservedConcurrentExecutions: 1
+      Policies:
+      - Statement:
+        - Sid: SSMDescribeParametersPolicy
+          Effect: Allow
+          Action:
+          - ssm:DescribeParameters
+          Resource: '*'
+        - Sid: SSMGetParameterPolicy
+          Effect: Allow
+          Action:
+          - ssm:GetParameters
+          - ssm:GetParameter
+          Resource: '*'
+      Environment:
+        Variables:
+          PROJECT: food-recommendation
+          ENV: dev
+          REGION: ap-northeast-2
+    Metadata:
+      BuildMethod: go1.x
+      SamResourceId: FoodNameBatchFunction
+Outputs:
+  FoodNameBatchFunction:
+    Description: First Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - FoodNameBatchFunction
+      - Arn

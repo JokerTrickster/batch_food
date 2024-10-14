@@ -1,0 +1,60 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  음식 이름 생성 배치
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 60
+
+Resources:
+  FoodNameBatchFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      ReservedConcurrentExecutions: 2  
+    Metadata:
+      BuildMethod: go1.x
+    Properties:
+      CodeUri: src
+      Handler: bootstrap
+      PackageType: Zip
+      MemorySize: 128
+      Runtime: provided.al2023
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0d4f2d15fa5913603 #idea_dev_private_int
+        SubnetIds:
+          - subnet-0e4c4c4cc2b0459e1 #idea-private-b1
+          - subnet-0a46a28c5d6246a32 #idea-private-c1
+      Architectures:
+        - x86_64
+      Events:
+        CWSchedule:
+          Type: Schedule
+          Properties:
+            Schedule: 'cron(0/3 * * * ? *)'
+      ReservedConcurrentExecutions: 1
+      Policies:
+        - Statement:
+            - Sid: SSMDescribeParametersPolicy
+              Effect: Allow
+              Action:
+                - ssm:DescribeParameters
+              Resource: '*'
+            - Sid: SSMGetParameterPolicy
+              Effect: Allow
+              Action:
+                - ssm:GetParameters
+                - ssm:GetParameter
+              Resource: '*'
+      Environment:
+        Variables:
+          PROJECT: 'food-recommendation'
+          ENV: 'dev'
+          REGION: 'ap-northeast-2'
+
+Outputs:
+  FoodNameBatchFunction:
+    Description: "First Lambda Function ARN"
+    Value: !GetAtt FoodNameBatchFunction.Arn
