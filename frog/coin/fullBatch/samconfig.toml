@@ -1,0 +1,18 @@
+version = 0.1
+
+[apne2-dev.deploy]
+[apne2-dev.deploy.parameters]
+stack_name = "frog-batch-full-coin"
+s3_bucket = "frog-full-coin-nr2nl2wmo6k1"
+s3_prefix = "frog-batch-full-coin"
+region = "ap-northeast-2"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+image_repositories = []
+[default.deploy.parameters]
+stack_name = "sam-app"
+resolve_s3 = true
+s3_prefix = "sam-app"
+region = "ap-northeast-2"
+capabilities = "CAPABILITY_IAM"
+image_repositories = []
