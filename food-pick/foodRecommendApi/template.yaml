@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  음식 이름 추천 api
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 600
+
+Resources:
+  FoodNameRecommendationAPI:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      ReservedConcurrentExecutions: 2  
+    Metadata:
+      BuildMethod: python3.9
+    Properties:
+      CodeUri: src
+      Handler: app.lambda_handler
+      PackageType: Zip
+      MemorySize: 128
+      Runtime: python3.9
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-07fc0de84a8e119c0 #idea_dev_private_int
+        SubnetIds:
+          - subnet-017c0de3d874cab7e #idea-private-b1
+          - subnet-00bd54fe53b26180d #idea-private-c1
+      Architectures:
+        - x86_64
+      Events:
+        ApiGateway:
+          Type: Api
+          Properties:
+            Path: /recommend
+            Method: post
+      ReservedConcurrentExecutions: 1
+      Policies:
+        - Statement:
+            - Sid: SSMDescribeParametersPolicy
+              Effect: Allow
+              Action:
+                - ssm:DescribeParameters
+              Resource: '*'
+            - Sid: SSMGetParameterPolicy
+              Effect: Allow
+              Action:
+                - ssm:GetParameters
+                - ssm:GetParameter
+              Resource: '*'
+      Environment:
+        Variables:
+          PROJECT: 'food-recommendation'
+          ENV: 'dev'
+          REGION: 'ap-northeast-2'
+
+Outputs:
+  FoodNameRecommendationAPI:
+    Description: "Food Name Recommendation API Lambda Function ARN"
+    Value: !GetAtt FoodNameRecommendationAPI.Arn
