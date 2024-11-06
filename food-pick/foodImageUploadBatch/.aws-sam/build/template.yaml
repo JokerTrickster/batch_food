@@ -1,0 +1,57 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: "\uC74C\uC2DD \uC774\uB984 \uCD94\uCC9C api\n"
+Globals:
+  Function:
+    Timeout: 600
+Resources:
+  FoodImageUploadBatchFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: FoodImageUploadBatchFunction
+      Handler: bootstrap
+      PackageType: Zip
+      MemorySize: 128
+      Runtime: provided.al2023
+      VpcConfig:
+        SecurityGroupIds:
+        - sg-07fc0de84a8e119c0
+        SubnetIds:
+        - subnet-017c0de3d874cab7e
+        - subnet-00bd54fe53b26180d
+      Architectures:
+      - x86_64
+      Events:
+        CWSchedule:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 1 * * ? *)
+      ReservedConcurrentExecutions: 1
+      Policies:
+      - Statement:
+        - Sid: SSMDescribeParametersPolicy
+          Effect: Allow
+          Action:
+          - ssm:DescribeParameters
+          Resource: '*'
+        - Sid: SSMGetParameterPolicy
+          Effect: Allow
+          Action:
+          - ssm:GetParameters
+          - ssm:GetParameter
+          Resource: '*'
+      Environment:
+        Variables:
+          PROJECT: food-recommendation
+          ENV: dev
+          REGION: ap-northeast-2
+    Metadata:
+      BuildMethod: go1.x
+      SamResourceId: FoodImageUploadBatchFunction
+Outputs:
+  FoodImageUploadBatchFunction:
+    Description: First Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - FoodImageUploadBatchFunction
+      - Arn
