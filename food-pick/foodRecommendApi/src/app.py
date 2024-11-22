@@ -15,6 +15,8 @@ def lambda_handler(event, context):
         aws_initialized = True
 
     param_value = aws_init.get_param('dev_common_mysql_host')
+    
+    
 
     if param_value is None:
         return {

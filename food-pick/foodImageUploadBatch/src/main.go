@@ -50,9 +50,9 @@ func handler(ctx context.Context, request events.CloudWatchEvent) error {
 	folderID := "1dDuC5IM8fQ1GNUyFaLfAvmKQhpU8fWgX"
 	queryDate := time.Now().AddDate(0, 0, -1).In(time.FixedZone("KST", 9*60*60)).Format("2006-01-02")
 	fmt.Println(queryDate)
+	query := fmt.Sprintf("'%s' in parents and mimeType contains 'image/' and modifiedTime >= '%sT00:00:00Z'", folderID, queryDate)
 
 	// 이미지 파일 검색 쿼리
-	query := fmt.Sprintf("'%s' in parents and mimeType contains 'image/' and modifiedTime >= '%sT00:00:00Z'", folderID, queryDate)
 	r, err := srv.Files.List().Q(query).Fields("files(id, name, mimeType)").Do()
 	if err != nil {
 		log.Fatalf("Unable to retrieve files: %v", err)
