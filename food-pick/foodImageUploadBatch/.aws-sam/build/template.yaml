@@ -25,7 +25,7 @@ Resources:
         CWSchedule:
           Type: Schedule
           Properties:
-            Schedule: cron(0 1 * * ? *)
+            Schedule: cron(0 13 * * ? *)
       ReservedConcurrentExecutions: 1
       Policies:
       - Statement:
