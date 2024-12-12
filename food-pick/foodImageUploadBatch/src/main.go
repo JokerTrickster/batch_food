@@ -50,7 +50,9 @@ func handler(ctx context.Context, request events.CloudWatchEvent) error {
 	folderID := "1dDuC5IM8fQ1GNUyFaLfAvmKQhpU8fWgX"
 	queryDate := time.Now().AddDate(0, 0, -1).In(time.FixedZone("KST", 9*60*60)).Format("2006-01-02")
 	fmt.Println(queryDate)
-	query := fmt.Sprintf("'%s' in parents and mimeType contains 'image/' and modifiedTime >= '%sT00:00:00Z'", folderID, queryDate)
+	// query := fmt.Sprintf("'%s' in parents and mimeType contains 'image/' and modifiedTime >= '%sT00:00:00Z'", folderID, queryDate)
+	//	전체 업로드
+	query := fmt.Sprintf("'%s' in parents and mimeType contains 'image/'", folderID)
 
 	// 이미지 파일 검색 쿼리
 	r, err := srv.Files.List().Q(query).Fields("files(id, name, mimeType)").Do()
@@ -65,21 +67,47 @@ func handler(ctx context.Context, request events.CloudWatchEvent) error {
 
 	successFoodList = make([]string, 0)
 	failedFoodList = make([]string, 0)
+	// 이미지 파일 검색 쿼리
+	pageToken := ""
+	for {
+		r, err := srv.Files.List().
+			Q(query).
+			Fields("nextPageToken, files(id, name, mimeType)").
+			PageSize(100).
+			PageToken(pageToken).
+			Do()
+		if err != nil {
+			log.Fatalf("Unable to retrieve files: %v", err)
+		}
 
-	for _, file := range r.Files {
-		// 파일이 이미지인지 확인
-		if strings.HasPrefix(file.MimeType, "image/") {
-			fmt.Printf("Downloading image file: %s (%s)\n", file.Name, file.Id)
-			result, err := downloadFile(srv, file.Id, file.Name)
-			if err != nil {
-				log.Fatalf("Error downloading file: %v", err)
-			}
-			if result {
-				successFoodList = append(successFoodList, file.Name)
-			} else {
-				failedFoodList = append(failedFoodList, file.Name)
+		if len(r.Files) == 0 {
+			fmt.Println("No image files found.")
+			break
+		}
+
+		for _, file := range r.Files {
+			// 파일이 이미지인지 확인
+			if strings.HasPrefix(file.MimeType, "image/") {
+				fmt.Printf("Downloading image file: %s (%s)\n", file.Name, file.Id)
+				result, err := downloadFile(srv, file.Id, file.Name)
+				if err != nil {
+					log.Printf("Error downloading file %s: %v", file.Name, err)
+					failedFoodList = append(failedFoodList, file.Name)
+					continue
+				}
+				if result {
+					successFoodList = append(successFoodList, file.Name)
+				} else {
+					failedFoodList = append(failedFoodList, file.Name)
+				}
 			}
 		}
+
+		// 다음 페이지가 있는지 확인
+		if r.NextPageToken == "" {
+			break
+		}
+		pageToken = r.NextPageToken
 	}
 
 	// 업로드 성공 및 실패 목록을 POST 요청으로 전송

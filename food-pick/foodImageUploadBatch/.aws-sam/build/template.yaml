@@ -3,7 +3,7 @@ Transform: AWS::Serverless-2016-10-31
 Description: "\uC74C\uC2DD \uC774\uB984 \uCD94\uCC9C api\n"
 Globals:
   Function:
-    Timeout: 600
+    Timeout: 1600
 Resources:
   FoodImageUploadBatchFunction:
     Type: AWS::Serverless::Function

@@ -50,23 +50,25 @@ func handler(ctx context.Context, request events.CloudWatchEvent) error {
 	folderID := "1KDo4we8UnYPoSh58S8pBY5HTTq6wZmKZ"
 	queryDate := time.Now().AddDate(0, 0, -60).In(time.FixedZone("KST", 9*60*60)).Format("2006-01-02")
 	fmt.Println(queryDate)
-	query := fmt.Sprintf("'%s' in parents and mimeType contains 'image/' and modifiedTime >= '%sT00:00:00Z'", folderID, queryDate)
+	// query := fmt.Sprintf("'%s' in parents and mimeType contains 'image/'", folderID)
+	// query := fmt.Sprintf("'%s' in parents and mimeType contains 'image/' and modifiedTime >= '%sT00:00:00Z'", folderID, queryDate)
 	// 이미지 파일 검색 쿼리
-	r, err := srv.Files.List().Q(query).Fields("files(id, name, mimeType)").Do()
+	// r, err := srv.Files.List().Q(query).Fields("files(id, name, mimeType)").Do()
+	// if err != nil {
+	// 	log.Fatalf("Unable to retrieve files: %v", err)
+	// }
+
+	files, err := getAllFiles(srv, folderID)
 	if err != nil {
-		log.Fatalf("Unable to retrieve files: %v", err)
+		log.Fatalf("Error retrieving files: %v", err)
 	}
 
-	fmt.Println(len(r.Files))
-	if len(r.Files) == 0 {
-		fmt.Println("No image files found.")
-		return nil
-	}
+	fmt.Printf("Total files: %d\n", len(files))
 
 	successList = make([]string, 0)
 	failedList = make([]string, 0)
 
-	for _, file := range r.Files {
+	for _, file := range files {
 		// 파일이 이미지인지 확인
 		if strings.HasPrefix(file.MimeType, "image/") {
 			fmt.Printf("Downloading image file: %s (%s)\n", file.Name, file.Id)
@@ -171,4 +173,33 @@ func downloadFile(srv *drive.Service, fileID string, fileName string) (bool, err
 	}
 
 	return true, nil
+}
+func getAllFiles(srv *drive.Service, folderID string) ([]*drive.File, error) {
+	var allFiles []*drive.File
+	query := fmt.Sprintf("'%s' in parents and mimeType contains 'image/'", folderID)
+	pageToken := ""
+
+	for {
+		request := srv.Files.List().Q(query).Fields("nextPageToken, files(id, name, mimeType)")
+		if pageToken != "" {
+			request = request.PageToken(pageToken)
+		}
+
+		r, err := request.Do()
+		if err != nil {
+			return nil, fmt.Errorf("unable to retrieve files: %v", err)
+		}
+
+		allFiles = append(allFiles, r.Files...)
+
+		// 다음 페이지가 없으면 종료
+		if r.NextPageToken == "" {
+			break
+		}
+
+		// 다음 페이지 토큰 설정
+		pageToken = r.NextPageToken
+	}
+
+	return allFiles, nil
 }
