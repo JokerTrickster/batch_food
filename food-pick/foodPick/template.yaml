@@ -1,0 +1,54 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  음식 추천 서버리스
+
+Globals:
+  Function:
+    Timeout: 60
+
+Resources:
+  FoodPickApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: dev
+      DefinitionBody:
+        swagger: '2.0'
+        info:
+          title: FoodPickApi
+        paths:
+          /v0.1/users:
+            get:
+              x-amazon-apigateway-integration:
+                uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetUserFunction.Arn}/invocations"
+                httpMethod: GET
+                type: aws_proxy
+
+  GetUserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src
+      Handler: bootstrap
+      Runtime: provided.al2023
+      MemorySize: 128
+      Timeout: 60
+      Architectures:
+        - x86_64
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-07fc0de84a8e119c0 # idea_dev_private_int
+        SubnetIds:
+          - subnet-017c0de3d874cab7e # idea-private-b1
+          - subnet-00bd54fe53b26180d # idea-private-c1
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref FoodPickApi
+            Path: /v0.1/users
+            Method: GET
+
+Outputs:
+  FoodPickApiEndpoint:
+    Description: "API Gateway endpoint"
+    Value: !Sub "https://${FoodPickApi}.execute-api.${AWS::Region}.amazonaws.com/dev/"

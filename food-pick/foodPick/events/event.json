@@ -1,0 +1,8 @@
+{
+  "httpMethod": "GET",
+  "path": "/v0.1/users",
+  "body": "",
+  "headers": {
+    "Content-Type": "application/json"
+  }
+}
