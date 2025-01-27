@@ -2,7 +2,7 @@ package _interface
 
 import (
 	"context"
-	"main/users/model/response"
+	"main/model/response"
 )
 
 type IGetUserUseCase interface {

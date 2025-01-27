@@ -1,9 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: "\uC74C\uC2DD \uCD94\uCC9C \uC11C\uBC84\uB9AC\uC2A4\n"
-Globals:
-  Function:
-    Timeout: 60
 Resources:
   FoodPickApi:
     Type: AWS::Serverless::Api
@@ -37,8 +33,20 @@ Resources:
         SubnetIds:
         - subnet-017c0de3d874cab7e
         - subnet-00bd54fe53b26180d
+      Policies:
+      - Statement:
+        - Sid: DynamoDBAccess
+          Effect: Allow
+          Action:
+          - dynamodb:GetItem
+          Resource: '*'
+      Environment:
+        Variables:
+          PROJECT: food-recommendation
+          ENV: dev
+          REGION: ap-northeast-2
       Events:
-        ApiEvent:
+        GetUserApi:
           Type: Api
           Properties:
             RestApiId:
@@ -48,7 +56,13 @@ Resources:
     Metadata:
       SamResourceId: GetUserFunction
 Outputs:
+  GetUserFunctionArn:
+    Description: Lambda Function ARN for the GetUser API
+    Value:
+      Fn::GetAtt:
+      - GetUserFunction
+      - Arn
   FoodPickApiEndpoint:
-    Description: API Gateway endpoint
+    Description: API Gateway Endpoint
     Value:
       Fn::Sub: https://${FoodPickApi}.execute-api.${AWS::Region}.amazonaws.com/dev/

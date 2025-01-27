@@ -1,9 +1,9 @@
 package mysql
 
 import (
+	_aws "common/aws"
 	"database/sql"
 	"fmt"
-	_aws "main/common/aws"
 	"os"
 	"time"
 

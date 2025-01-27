@@ -1,9 +1,9 @@
-package utils
+package common
 
 import (
+	"common/aws"
 	"context"
 	"fmt"
-	"main/common/aws"
 
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/messaging"

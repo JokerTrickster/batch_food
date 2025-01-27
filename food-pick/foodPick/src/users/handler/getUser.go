@@ -2,7 +2,7 @@ package handler
 
 import (
 	"fmt"
-	_interface "main/users/model/interface"
+	_interface "main/model/interface"
 
 	"github.com/aws/aws-lambda-go/events"
 )

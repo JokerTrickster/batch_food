@@ -1,11 +1,11 @@
-package utils
+package common
 
 import (
+	"common/aws"
+	_aws "common/aws"
+	"common/db/mysql"
+	_redis "common/db/redis"
 	"fmt"
-	"main/common/aws"
-	_aws "main/common/aws"
-	"main/common/db/mysql"
-	_redis "main/common/db/redis"
 	"os"
 )
 

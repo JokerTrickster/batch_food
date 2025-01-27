@@ -3,8 +3,8 @@ package usecase
 import (
 	"context"
 	"fmt"
-	_interface "main/users/model/interface"
-	"main/users/model/response"
+	_interface "main/model/interface"
+	"main/model/response"
 	"time"
 )
 

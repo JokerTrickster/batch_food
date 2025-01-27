@@ -47,7 +47,7 @@ func handler(ctx context.Context, request events.CloudWatchEvent) error {
 	}
 
 	// 원하는 Google Drive 폴더의 ID를 설정합니다.
-	folderID := "11LPk-no1oszYsSKPCr595mIoB25tZljc"
+	folderID := "1QBSDENt3wpkdfoVt2vW6UxFDxaUUxhp8"
 	queryDate := time.Now().AddDate(0, 0, -1).In(time.FixedZone("KST", 9*60*60)).Format("2006-01-02")
 	fmt.Println(queryDate)
 	// query := fmt.Sprintf("'%s' in parents and mimeType contains 'image/' and modifiedTime >= '%sT00:00:00Z'", folderID, queryDate)

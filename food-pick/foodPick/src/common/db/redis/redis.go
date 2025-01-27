@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	_aws "main/common/aws"
+	_aws "common/aws"
 
 	"github.com/redis/go-redis/v9"
 )

@@ -1,0 +1,64 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  # 공통 API Gateway 정의
+  FoodPickApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: dev
+      DefinitionBody:
+        swagger: '2.0'
+        info:
+          title: FoodPickApi
+        paths:
+          /v0.1/users:
+            get:
+              x-amazon-apigateway-integration:
+                uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetUserFunction.Arn}/invocations"
+                httpMethod: GET
+                type: aws_proxy
+
+  # 유저 도메인 Lambda 함수
+  GetUserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/users/
+      Handler: bootstrap
+      Runtime: provided.al2023
+      MemorySize: 128
+      Timeout: 60
+      Architectures:
+        - x86_64
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-07fc0de84a8e119c0
+        SubnetIds:
+          - subnet-017c0de3d874cab7e
+          - subnet-00bd54fe53b26180d
+      Policies:
+        - Statement:
+            - Sid: DynamoDBAccess
+              Effect: Allow
+              Action:
+                - dynamodb:GetItem
+              Resource: '*'
+      Environment:
+        Variables:
+          PROJECT: 'food-recommendation'
+          ENV: 'dev'
+          REGION: 'ap-northeast-2'
+      Events:
+        GetUserApi:
+          Type: Api
+          Properties:
+            Path: /v0.1/users
+            Method: GET
+
+Outputs:
+  GetUserFunctionArn:
+    Description: "Lambda Function ARN for the GetUser API"
+    Value: !GetAtt GetUserFunction.Arn
+  FoodPickApiEndpoint:
+    Description: "API Gateway Endpoint"
+    Value: !Sub "https://${FoodPickApi}.execute-api.${AWS::Region}.amazonaws.com/dev/"

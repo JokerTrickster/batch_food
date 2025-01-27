@@ -1,9 +1,9 @@
-package utils
+package common
 
 import (
+	"common/aws"
 	"context"
 	"fmt"
-	"main/common/aws"
 	"net/http"
 	"os"
 

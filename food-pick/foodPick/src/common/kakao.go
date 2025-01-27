@@ -1,11 +1,11 @@
-package utils
+package common
 
 import (
+	"common/aws"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"main/common/aws"
 	"net/http"
 	"strconv"
 	"time"
