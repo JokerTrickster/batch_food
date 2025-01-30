@@ -1,0 +1,20 @@
+# 기본 AWS SDK
+boto3
+botocore
+
+# 데이터베이스 연동
+sqlalchemy
+pymysql  # MySQL 사용 시 필요
+
+# LLM 관련
+langchain
+langchain-openai
+pydantic  # LangChain 의존성
+
+# 캐싱 (Redis)
+redis
+
+# 기타 유틸리티
+python-dotenv  # 환경변수 로드
+requests
+pytz

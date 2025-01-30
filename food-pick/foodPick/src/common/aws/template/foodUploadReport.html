@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Upload Status</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            background-color: #f9f9f9;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .header {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        .description {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            border-radius: 6px;
+            padding: 15px;
+            background-color: #f4f4f4;
+            margin-bottom: 15px;
+        }
+
+        .success {
+            border-left: 4px solid #4CAF50;
+        }
+
+        .failure {
+            border-left: 4px solid #F44336;
+        }
+
+        h2 {
+            font-size: 16px;
+            margin: 0 0 10px;
+            color: #333;
+        }
+
+        .food-list {
+            font-size: 14px;
+            color: #444;
+        }
+
+        .link-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .link-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">아래는 음식 이미지 업로드 결과입니다.</div>
+        <div class="description">확인해서 음식 업로드 실패한 음식 이름은 음식 이름을 추가해주세요~</div>
+
+        <div class="card success">
+            <h2>업로드 성공한 음식</h2>
+            <div class="food-list">{{successFoodList}}</div>
+        </div>
+
+        <div class="card failure">
+            <h2>업로드 실패한 음식</h2>
+            <div class="food-list">{{failedFoodList}}</div>
+        </div>
+
+        <div class="link-container">
+            <a href="https://drive.google.com/drive/folders/1dDuC5IM8fQ1GNUyFaLfAvmKQhpU8fWgX?usp=drive_link"
+                class="link-button">음식 업로드 하러 문서 이동 버튼</a>
+        </div>
+    </div>
+</body>
+
+</html>

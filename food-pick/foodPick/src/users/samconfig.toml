@@ -1,0 +1,18 @@
+version = 0.1
+
+[apne2-dev.deploy]
+[apne2-dev.deploy.parameters]
+stack_name = "food-apne2-dev"
+s3_bucket = "aws-sam-cli-food-samclisourcebucket-nr2nl2wmo6k1"
+s3_prefix = "food-pick-serverless-dev"
+region = "ap-northeast-2"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+image_repositories = []
+[default.deploy.parameters]
+stack_name = "user-get"
+resolve_s3 = true
+s3_prefix = "user-get"
+region = "ap-northeast-2"
+capabilities = "CAPABILITY_IAM"
+image_repositories = []

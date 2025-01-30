@@ -1,0 +1,8 @@
+{
+    "Template": {
+        "TemplateName": "foodReport",
+        "SubjectPart": "1:1 문의하기",
+        "TextPart": "1:1 문의가 접수되었습니다.\n유저 아이디 {{userID}} 님이 아래와 같은 문의를 남기셨습니다.\n문의 내용: {{reason}}",
+        "HtmlPart": "<html><body><p>1:1 문의가 접수되었습니다.</p><p>유저 아이디 <strong>{{userID}}</strong> 님이 아래와 같은 문의를 남기셨습니다.</p><p>문의 내용: <strong>{{reason}}</strong></p></body></html>"
+    }
+}

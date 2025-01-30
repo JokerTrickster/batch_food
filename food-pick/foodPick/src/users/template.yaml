@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  GetUserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: bootstrap
+      Runtime: provided.al2023
+      MemorySize: 128
+      Timeout: 60
+      Architectures:
+        - x86_64
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-07fc0de84a8e119c0
+        SubnetIds:
+          - subnet-017c0de3d874cab7e
+          - subnet-00bd54fe53b26180d
+      Policies:
+        - Statement:
+            - Sid: AllowDynamoDBAccess
+              Effect: Allow
+              Action:
+                - dynamodb:GetItem
+              Resource: '*' # 구체적인 DynamoDB 테이블 ARN으로 제한하는 것이 권장됩니다.
+            - Sid: AllowApiGatewayInvoke
+              Effect: Allow
+              Action:
+                - lambda:InvokeFunction
+              Principal:
+                Service: apigateway.amazonaws.com
+              Resource: !GetAtt GetUserFunction.Arn
+              Condition:
+                ArnLike:
+                  AWS:SourceArn: "arn:aws:execute-api:ap-northeast-2:730335282594:u4by9z2u4g/*/GET/v0.1/users"
+      Environment:
+        Variables:
+          PROJECT: 'food-recommendation'
+          ENV: 'dev'
+          REGION: 'ap-northeast-2'
+
+Outputs:
+  GetUserFunctionArn:
+    Description: "Lambda Function ARN for the GetUser API"
+    Value: !GetAtt GetUserFunction.Arn
