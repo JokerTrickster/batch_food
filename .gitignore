@@ -1,0 +1,8 @@
+
+/food-pick/foodMessageBatch/src/python/*
+/food-pick/foodMessageBatch/src/venv/*
+/food-pick/foodMessageBatch/.aws-sam/*
+
+/food-pick/foodPreferenceBatch/src/python/*
+/food-pick/foodPreferenceBatch/src/venv/*
+/food-pick/foodPreferenceBatch/.aws-sam/*

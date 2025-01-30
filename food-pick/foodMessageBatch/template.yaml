@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  foodMessageBatch
+
+  Sample SAM Template for foodMessageBatch
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3600
+    MemorySize: 128
+
+Resources:
+  FoodMessageBatchFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: src
+      Handler: app.lambda_handler
+      PackageType: Zip
+      MemorySize: 128
+      Runtime: python3.9
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-07fc0de84a8e119c0 #idea_dev_private_int
+        SubnetIds:
+          - subnet-017c0de3d874cab7e #idea-private-b1
+          - subnet-00bd54fe53b26180d #idea-private-c1
+      Architectures:
+        - x86_64
+      Events:
+        DailySchedule:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 2,8 * * ? *)  # ✅ 매일 한국 시간 12시, 18시 실행 (UTC 기준)
+            Name: FoodMessageBatchSchedule
+            Description: "매일 11시, 17시에 메시지 전송 배치 실행"
+            Enabled: true
+      Policies:
+        - Statement:
+            - Sid: SSMDescribeParametersPolicy
+              Effect: Allow
+              Action:
+                - ssm:DescribeParameters
+              Resource: '*'
+            - Sid: SSMGetParameterPolicy
+              Effect: Allow
+              Action:
+                - ssm:GetParameters
+                - ssm:GetParameter
+              Resource: '*'
+      Environment:
+        Variables:
+          PROJECT: 'food-recommendation'
+          ENV: 'dev'
+          REGION: 'ap-northeast-2'
+
+Outputs:
+  FoodMessageBatchFunction:
+    Description: "Food Message Batch Lambda Function ARN"
+    Value: !GetAtt FoodMessageBatchFunction.Arn
